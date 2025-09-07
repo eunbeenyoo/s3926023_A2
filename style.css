@@ -1,0 +1,195 @@
+/* =========================================================
+   Base
+========================================================= */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: "Saira", sans-serif;
+  color: #222;
+  background: #f8f8f8;
+  line-height: 1.6;
+}
+
+/* (예시 네비) */
+header nav ul {
+  display: flex; gap: 1.5rem;
+  list-style: none;
+  padding: 1rem 2rem;
+  background: #f2f2f2;
+}
+header nav a { text-decoration: none; color: #333; }
+header nav a.active { font-weight: 700; }
+
+/* =========================================================
+   Works: 타이틀 & 비디오
+========================================================= */
+.works-page { text-align: center; padding-bottom: 4rem; }
+.works-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  margin: 2rem 0 1.25rem;
+  font-weight: 800;
+}
+
+/* 비디오 카드 */
+.works-video {
+  width: min(80vw, 900px);
+  aspect-ratio: 16 / 9;        /* 반응형 비율 유지 */
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+  outline: none;
+  display: inline-block;
+  will-change: transform;
+}
+
+@keyframes wobble {
+  0%   { transform: rotate(0deg)    scale(1); }
+  20%  { transform: rotate(0.35deg) scale(1.01); }
+  50%  { transform: rotate(0deg)    scale(1.015); }
+  80%  { transform: rotate(-0.35deg) scale(1.01); }
+  100% { transform: rotate(0deg)    scale(1); }
+}
+/* 모션 최소화 환경 */
+@media (prefers-reduced-motion: reduce) {
+  .works-video:hover { animation: none; }
+}
+
+/* =========================================================
+   가로 스크롤 갤러리 (5 images)
+========================================================= */
+.filmstrip-wrap {
+  position: relative;
+  margin: clamp(12px, 2vw, 24px) auto 0;   /* 바깥 여백은 wrap 담당 */
+  padding: clamp(4px, 0.8vw, 10px) 0;      /* 중앙 기준 안정화 */
+  max-width: none;
+}
+.filmstrip {
+  margin: 0;                                /* wrap가 margin 담당 */
+  display: flex;
+  gap: clamp(8px, 1.5vw, 16px);
+  padding: 0 clamp(12px, 2vw, 16px);       /* 좌우 여백 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-left: clamp(12px, 2vw, 16px);
+  scroll-padding-right: clamp(12px, 2vw, 16px);
+  scrollbar-gutter: stable both-edges;     /* 스크롤바로 인한 높이 흔들림 방지 */
+}
+.filmstrip .shot {
+  flex: 0 0 auto;
+  width: clamp(220px, 40vw, 360px);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  scroll-snap-align: start;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* 스크롤바(선택) */
+.filmstrip::-webkit-scrollbar { height: 8px; }
+.filmstrip::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 999px;
+}
+
+/* ===== 좌우 네비게이션 버튼 (화살표) =====
+   - 세로는 wrap의 정확한 중앙에 정렬(top/bottom 0 + auto margin)
+   - 좌우는 filmstrip padding에 맞춤
+*/
+.filmstrip-nav {
+  position: absolute;
+  top: 0; bottom: 0;
+  margin: auto 0;                   /* 진짜 정중앙 */
+  width: clamp(36px, 4vw, 44px);
+  height: clamp(36px, 4vw, 44px);
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  color: #111;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0;                       /* 기본 숨김 */
+  pointer-events: none;             /* 숨김 시 클릭 방지 */
+  transition: opacity 180ms ease, transform 180ms ease;
+  z-index: 2;
+}
+.filmstrip-wrap:hover .filmstrip-nav,
+.filmstrip-wrap:focus-within .filmstrip-nav {
+  opacity: 1;
+  pointer-events: auto;
+}
+.filmstrip-nav.prev  { left:  clamp(12px, 2vw, 16px); }
+.filmstrip-nav.next  { right: clamp(12px, 2vw, 16px); }
+.filmstrip-nav:hover { transform: scale(1.06); }
+.filmstrip-nav:active { transform: scale(0.98); }
+.filmstrip-nav:disabled { opacity: 0.25; pointer-events: none; }
+
+/* =========================================================
+   추가 1:1 이미지 (오른쪽 정렬)
+========================================================= */
+.croc-image {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: clamp(40px, 12vw, 200px);
+  padding-right: clamp(12px, 5vw, 80px);
+}
+.croc-image img {
+  width: clamp(200px, 40vw, 800px);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  .filmstrip .shot { width: 85vw; } /* 작은 화면에선 한 장씩 크게 */
+  .croc-image {
+    justify-content: center;
+    padding-right: clamp(8px, 2vw, 12px);
+  }
+}
+
+/* =========================================================
+   미세 패럴랙스(마우스 방향 반대, 멈추면 정지)
+   - 대상 요소에 class="pan" 추가 (예: <img class="shot pan">, <video class="works-video pan">)
+========================================================= */
+.pan {
+  --tx: 0px;   /* JS가 업데이트할 X 이동량 */
+  --ty: 0px;   /* JS가 업데이트할 Y 이동량 */
+  --scale: 1;  /* hover 시 약간 확대 */
+  transform: translate(var(--tx), var(--ty)) scale(var(--scale));
+  transition: transform 100ms ease-out;
+  will-change: transform;
+}
+
+.pan:hover {
+   --scale: 1.01; 
+  }
+
+/* 필요 시 부모에 overflow 숨김이 필요하면 래퍼에 pan-wrap 사용 */
+.pan-wrap { 
+   position: relative;
+   overflow: hidden;
+   border-radius: 12px;
+ }
+
+/* 모션 최소화 환경 배려 */
+@media (prefers-reduced-motion: reduce) {
+  .pan { transition: none; transform: none; }
+  .pan:hover { --scale: 1; }
+}
+
+/* =========================================================
+   커스텀 커서(옵션)
+========================================================= */
+.cursor-dot {
+  position: fixed; top: 0; left: 0;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #000;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  will-change: transform;
+}
+.cursor-dot.is-down { width: 12px; height: 12px; }

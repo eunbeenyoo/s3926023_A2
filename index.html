@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Works</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body class="works-page">
+  <div class="cursor-dot"></div>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="index.html">About</a></li>
+        <li><a href="work.html">Work</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+  </main>
+
+  <footer>
+    <p>© 2025 Eunbeen Yoo</p>
+  </footer>
+  <script>
+  const dot = document.querySelector('.cursor-dot');
+
+  // 초기값을 먼저 정의
+  let targetX = window.innerWidth / 2;
+  let targetY = window.innerHeight / 2;
+
+  // 렌더링 좌표(부드럽게 따라오는 위치)
+  let x = targetX, y = targetY;
+  let prevX = x, prevY = y;
+
+  // 마우스 위치 갱신
+  window.addEventListener('mousemove', (e) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+  });
+
+  function tick() {
+    // 부드럽게 따라오기 (lerp)
+    const follow = 0.18;
+    x += (targetX - x) * follow;
+    y += (targetY - y) * follow;
+
+    // 속도 계산
+    const dx = x - prevX;
+    const dy = y - prevY;
+    const speed = Math.hypot(dx, dy);
+
+    // 속도 정규화
+    const maxSpeed = 25;
+    const t = Math.min(speed / maxSpeed, 1);
+
+    // 스퀴시/스트레치
+    const maxStretch = 0.6;
+    const scaleX = 1 + t * maxStretch;
+    const scaleY = 1 / scaleX;
+
+    // 이동 방향 회전
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    // 적용
+    dot.style.transform =
+      `translate(${x}px, ${y}px) rotate(${angle}deg) scale(${scaleX}, ${scaleY})`;
+
+    prevX = x; prevY = y;
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // (선택) 클릭 피드백
+  window.addEventListener('mousedown', () => {
+    dot.style.transition = 'transform 80ms ease';
+    // 이미 transform에 translate/rotate/scale이 있으니
+    // 별도 확대는 살짝만 덮어써도 됨 (아래는 간단 버전)
+    dot.style.transform += ' scale(1.2)';
+  });
+  window.addEventListener('mouseup', () => {
+    dot.style.transition = 'transform 160ms ease';
+  });
+</script>
+
+</body>
+</html>
